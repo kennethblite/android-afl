@@ -3,6 +3,7 @@
 PROGNAME = ["afl"]
 VERSION = ["__builtin_func:shell grep '^#define VERSION ' config.h | cut -d '\"' -f2"]
 
+// Change PREFIX FOR YOUR BUILDS
 PREFIX = "/home/kensalt/AOSP/out/host/linux-x86"
 BIN_PATH = PREFIX + "/bin"
 HELPER_PATH = PREFIX + "/afl"
