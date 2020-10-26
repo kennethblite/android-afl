@@ -1,0 +1,252 @@
+
+
+PROGNAME = ["afl"]
+VERSION = ["__builtin_func:shell grep '^#define VERSION ' config.h | cut -d '\"' -f2"]
+
+PREFIX = "/home/kensalt/AOSP/out/host/linux-x86"
+BIN_PATH = PREFIX + "/bin"
+HELPER_PATH = PREFIX + "/afl"
+DOC_PATH = PREFIX + "/share/doc/afl"
+MISC_PATH = PREFIX + "/share/afl"
+
+common_CFLAGS = [
+    "-O3",
+    "-funroll-loops",
+]
+common_CFLAGS += [
+    "-Wall",
+    "-g",
+    "-Wno-pointer-sign",
+    "-Wno-pointer-arith",
+    "-Wno-sign-compare",
+    "-Wno-unused-parameter",
+    "-DAFL_PATH=\"" + HELPER_PATH + "\"",
+    "-DDOC_PATH=\"" + DOC_PATH + "\"",
+    "-DBIN_PATH=\"" + BIN_PATH + "\"",
+]
+
+// ANDROIDMK TRANSLATION ERROR: unsupported conditional
+// ifdef AFL_TRACE_PC
+
+common_CFLAGS += ["-DUSE_TRACE_PC=1"]
+// ANDROIDMK TRANSLATION ERROR: endif from unsupported conditional
+// endif
+
+//################################afl-gcc#################################
+
+ALL_TOOLS = [
+    "afl-g++",
+    "afl-clang",
+    "afl-clang++",
+]
+cc_binary_host {
+    name: "afl-gcc",
+
+    srcs: ["afl-gcc.c"],
+    cflags: common_CFLAGS,
+    // ANDROIDMK TRANSLATION ERROR: unsupported assignment to LOCAL_POST_INSTALL_CMD
+    // LOCAL_POST_INSTALL_CMD := $(hide) $(foreach t,$(ALL_TOOLS),ln -sf afl-gcc $(BIN_PATH)/$(t);)
+
+}
+
+//################################afl-as#################################
+/*
+cc_binary_host {
+    name: "afl-as",
+
+    srcs: ["afl-as.c"],
+    cflags: common_CFLAGS,
+    local_module_path: {
+        var: "HELPER_PATH",
+    },
+    // ANDROIDMK TRANSLATION ERROR: unsupported assignment to LOCAL_POST_INSTALL_CMD
+    // LOCAL_POST_INSTALL_CMD := $(hide) ln -sf afl-as $(LOCAL_MODULE_PATH)/as;
+
+}
+*/
+
+//################################afl-fuzz#################################
+
+cc_binary {
+    name: "afl-fuzz",
+
+    srcs: ["afl-fuzz.c"],
+    cflags: common_CFLAGS,
+}
+
+/*
+cc_binary_host {
+    name: "afl-fuzz",
+
+    srcs: ["afl-fuzz.c"],
+    cflags: common_CFLAGS,
+    host_ldlibs: ["-ldl"],
+}
+*/
+
+cc_binary {
+    name: "afl-showmap",
+
+    //################################afl-showmap#################################
+
+    srcs: ["afl-showmap.c"],
+    cflags: common_CFLAGS,
+}
+
+/*
+cc_binary_host {
+    name: "afl-showmap",
+
+    srcs: ["afl-showmap.c"],
+    cflags: common_CFLAGS,
+}
+*/
+
+//################################afl-tmin#################################
+
+cc_binary {
+    name: "afl-tmin",
+
+    srcs: ["afl-tmin.c"],
+    cflags: common_CFLAGS,
+}
+
+/*
+cc_binary_host {
+    name: "afl-tmin",
+
+    srcs: ["afl-tmin.c"],
+    cflags: common_CFLAGS,
+}
+*/
+
+//################################afl-analyze#################################
+
+cc_binary {
+    name: "afl-analyze",
+
+    srcs: ["afl-analyze.c"],
+    cflags: common_CFLAGS,
+}
+
+/*
+cc_binary_host {
+    name: "afl-analyze",
+
+    srcs: ["afl-analyze.c"],
+    cflags: common_CFLAGS,
+}
+*/
+
+//################################afl-gotcpu#################################
+
+cc_binary {
+    name: "afl-gotcpu",
+
+    srcs: ["afl-gotcpu.c"],
+    cflags: common_CFLAGS,
+}
+
+/*
+cc_binary_host {
+    name: "afl-gotcpu",
+
+    srcs: ["afl-gotcpu.c"],
+    cflags: common_CFLAGS,
+}
+*/
+
+//################################afl-clang-fast#################################
+/*
+cc_binary_host {
+    name: "afl-clang-fast",
+
+    srcs: ["llvm_mode/afl-clang-fast.c"],
+    clang: true,
+    cflags: common_CFLAGS,
+    // ANDROIDMK TRANSLATION ERROR: unsupported assignment to LOCAL_POST_INSTALL_CMD
+    // LOCAL_POST_INSTALL_CMD := $(hide) ln -sf afl-clang-fast $(BIN_PATH)/afl-clang-fast++;
+
+}
+*/
+
+//################################afl-llvm-pass.so#################################
+
+LLVM_CONFIG = "llvm-config"
+CLANG_CFL = [
+    "`" + LLVM_CONFIG,
+    "--cxxflags`",
+    "-fno-rtti",
+    "-fpic",
+    "-O3",
+    "-funroll-loops",
+    "-Wall",
+    "-g",
+    "-Wno-variadic-macros",
+    "-Wno-unknown-warning-option",
+]
+CLANG_LFL =  [
+    "`" + LLVM_CONFIG,
+    "--ldflags`",
+]
+HOST_CLANG_CXX = ["clang++"]
+
+// ANDROIDMK TRANSLATION ERROR: unsupported line
+// $(info Generating afl-llvm-pass.so)
+
+// ANDROIDMK TRANSLATION ERROR: unsupported line
+// $(shell mkdir -p $(TARGET_OUT))
+
+// ANDROIDMK TRANSLATION ERROR: unsupported line
+// $(shell ($(HOST_CLANG_CXX) $(CLANG_CFL) -shared $(LOCAL_PATH)/llvm_mode/afl-llvm-pass.so.cc -o $(TARGET_OUT)/afl-llvm-pass.so $(CLANG_LFL)))
+
+//###############################afl-llvm-rt#################################
+
+cc_library_shared {
+    name: "afl-llvm-rt",
+
+    srcs: ["llvm_mode/afl-llvm-rt.o.c"],
+    clang: true,
+    compile_multilib: "both",
+    // ANDROIDMK TRANSLATION ERROR: unsupported assignment to LOCAL_CC
+    // LOCAL_CC := /usr/bin/clang
+
+    cflags: common_CFLAGS,
+    // ANDROIDMK TRANSLATION ERROR: unsupported conditional
+    // ifeq ($(TARGET_2ND_ARCH),)
+
+    // ANDROIDMK TRANSLATION ERROR: unsupported assignment to LOCAL_POST_INSTALL_CMD
+    // LOCAL_POST_INSTALL_CMD := $(hide) cp -f $(TARGET_OUT_INTERMEDIATES)/SHARED_LIBRARIES/afl-llvm-rt_intermediates/llvm_mode/afl-llvm-rt.o.o $(TARGET_OUT)/afl-llvm-rt.o;
+
+    // ANDROIDMK TRANSLATION ERROR: else from unsupported conditional
+    // else
+
+    // ANDROIDMK TRANSLATION ERROR: unsupported assignment to LOCAL_POST_INSTALL_CMD
+    // LOCAL_POST_INSTALL_CMD := $(hide) cp -f $(TARGET_OUT_INTERMEDIATES)/SHARED_LIBRARIES/afl-llvm-rt_intermediates/llvm_mode/afl-llvm-rt.o.o $(TARGET_OUT)/afl-llvm-rt-64.o;  	cp -f $(TARGET_OUT_INTERMEDIATES)_$(TARGET_2ND_ARCH)/SHARED_LIBRARIES/afl-llvm-rt_intermediates/llvm_mode/afl-llvm-rt.o.o $(TARGET_OUT)/afl-llvm-rt.o;
+
+    // ANDROIDMK TRANSLATION ERROR: endif from unsupported conditional
+    // endif
+
+}
+/*
+cc_library_host_shared {
+    name: "afl-llvm-rt",
+
+    srcs: ["llvm_mode/afl-llvm-rt.o.c"],
+    cflags: common_CFLAGS,
+    compile_multilib: "64",
+    // ANDROIDMK TRANSLATION ERROR: unsupported assignment to LOCAL_POST_INSTALL_CMD
+    // LOCAL_POST_INSTALL_CMD := $(hide) cp -f $(HOST_OUT_INTERMEDIATES)/SHARED_LIBRARIES/afl-llvm-rt_intermediates/llvm_mode/afl-llvm-rt.o.o $(HELPER_PATH)/afl-llvm-rt-host.o;  	cp -f $(HOST_OUT_INTERMEDIATES)/SHARED_LIBRARIES/afl-llvm-rt_intermediates/llvm_mode/afl-llvm-rt.o.o $(HELPER_PATH)/afl-llvm-rt-host-64.o;
+
+}*/
+/*
+cc_library_host_shared {
+    name: "afl-llvm-rt",
+
+    srcs: ["llvm_mode/afl-llvm-rt.o.c"],
+    cflags: common_CFLAGS,
+    compile_multilib: "32",
+    // ANDROIDMK TRANSLATION ERROR: unsupported assignment to LOCAL_POST_INSTALL_CMD
+    // LOCAL_POST_INSTALL_CMD := $(hide) cp -f $(HOST_OUT_INTERMEDIATES)32/SHARED_LIBRARIES/afl-llvm-rt_intermediates/llvm_mode/afl-llvm-rt.o.o $(HELPER_PATH)/afl-llvm-rt-host-32.o;
+
+}*/

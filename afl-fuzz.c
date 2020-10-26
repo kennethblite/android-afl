@@ -558,13 +558,13 @@ static u8* DI(u64 val) {
   } while (0)
 
   /* 0-9999 */
-  CHK_FORMAT(1, 10000, "%llu", u64);
+  CHK_FORMAT(1, 10000, "%lu", u64);
 
   /* 10.0k - 99.9k */
   CHK_FORMAT(1000, 99.95, "%0.01fk", double);
 
   /* 100k - 999k */
-  CHK_FORMAT(1000, 1000, "%lluk", u64);
+  CHK_FORMAT(1000, 1000, "%luk", u64);
 
   /* 1.00M - 9.99M */
   CHK_FORMAT(1000 * 1000, 9.995, "%0.02fM", double);
@@ -573,7 +573,7 @@ static u8* DI(u64 val) {
   CHK_FORMAT(1000 * 1000, 99.95, "%0.01fM", double);
 
   /* 100M - 999M */
-  CHK_FORMAT(1000 * 1000, 1000, "%lluM", u64);
+  CHK_FORMAT(1000 * 1000, 1000, "%luM", u64);
 
   /* 1.00G - 9.99G */
   CHK_FORMAT(1000LL * 1000 * 1000, 9.995, "%0.02fG", double);
@@ -629,13 +629,13 @@ static u8* DMS(u64 val) {
   cur = (cur + 1) % 12;
 
   /* 0-9999 */
-  CHK_FORMAT(1, 10000, "%llu B", u64);
+  CHK_FORMAT(1, 10000, "%lu B", u64);
 
   /* 10.0k - 99.9k */
   CHK_FORMAT(1024, 99.95, "%0.01f kB", double);
 
   /* 100k - 999k */
-  CHK_FORMAT(1024, 1000, "%llu kB", u64);
+  CHK_FORMAT(1024, 1000, "%lu kB", u64);
 
   /* 1.00M - 9.99M */
   CHK_FORMAT(1024 * 1024, 9.995, "%0.02f MB", double);
@@ -644,7 +644,7 @@ static u8* DMS(u64 val) {
   CHK_FORMAT(1024 * 1024, 99.95, "%0.01f MB", double);
 
   /* 100M - 999M */
-  CHK_FORMAT(1024 * 1024, 1000, "%llu MB", u64);
+  CHK_FORMAT(1024 * 1024, 1000, "%lu MB", u64);
 
   /* 1.00G - 9.99G */
   CHK_FORMAT(1024LL * 1024 * 1024, 9.995, "%0.02f GB", double);
@@ -1917,7 +1917,7 @@ static void load_auto(void) {
     u8* fn = alloc_printf("%s/.state/auto_extras/auto_%06u", in_dir, i);
     s32 fd, len;
 
-    fd = open(fn, O_RDONLY, 0600);
+    fd = open(fn, O_RDONLY|O_CREAT, 0600);
 
     if (fd < 0) {
 
@@ -2175,9 +2175,9 @@ EXP_ST void init_forkserver(char** argv) {
            "      this diagnosis would be:\n\n"
 
 #ifdef RLIMIT_AS
-           "      ( ulimit -Sv $[%llu << 10]; /path/to/fuzzed_app )\n\n"
+           "      ( ulimit -Sv $[%lu << 10]; /path/to/fuzzed_app )\n\n"
 #else
-           "      ( ulimit -Sd $[%llu << 10]; /path/to/fuzzed_app )\n\n"
+           "      ( ulimit -Sd $[%lu << 10]; /path/to/fuzzed_app )\n\n"
 #endif /* ^RLIMIT_AS */
 
            "      Tip: you can use http://jwilk.net/software/recidivm to quickly\n"
@@ -2234,9 +2234,9 @@ EXP_ST void init_forkserver(char** argv) {
          "      simple way to confirm the diagnosis may be:\n\n"
 
 #ifdef RLIMIT_AS
-         "      ( ulimit -Sv $[%llu << 10]; /path/to/fuzzed_app )\n\n"
+         "      ( ulimit -Sv $[%lu << 10]; /path/to/fuzzed_app )\n\n"
 #else
-         "      ( ulimit -Sd $[%llu << 10]; /path/to/fuzzed_app )\n\n"
+         "      ( ulimit -Sd $[%lu << 10]; /path/to/fuzzed_app )\n\n"
 #endif /* ^RLIMIT_AS */
 
          "      Tip: you can use http://jwilk.net/software/recidivm to quickly\n"
@@ -2725,7 +2725,7 @@ static void perform_dry_run(char** argv) {
     if (stop_soon) return;
 
     if (res == crash_mode || res == FAULT_NOBITS)
-      SAYF(cGRA "    len = %u, map size = %u, exec speed = %llu us\n" cRST, 
+      SAYF(cGRA "    len = %u, map size = %u, exec speed = %lu us\n" cRST, 
            q->len, q->bitmap_size, q->exec_us);
 
     switch (res) {
@@ -2804,9 +2804,9 @@ static void perform_dry_run(char** argv) {
                "      try something along the lines of:\n\n"
 
 #ifdef RLIMIT_AS
-               "      ( ulimit -Sv $[%llu << 10]; /path/to/binary [...] <testcase )\n\n"
+               "      ( ulimit -Sv $[%lu << 10]; /path/to/binary [...] <testcase )\n\n"
 #else
-               "      ( ulimit -Sd $[%llu << 10]; /path/to/binary [...] <testcase )\n\n"
+               "      ( ulimit -Sd $[%lu << 10]; /path/to/binary [...] <testcase )\n\n"
 #endif /* ^RLIMIT_AS */
 
                "      Tip: you can use http://jwilk.net/software/recidivm to quickly\n"
@@ -3210,12 +3210,12 @@ static u8 save_if_interesting(char** argv, void* mem, u32 len, u8 fault) {
 
 #ifndef SIMPLE_FILES
 
-      fn = alloc_printf("%s/hangs/id:%06llu,%s", out_dir,
+      fn = alloc_printf("%s/hangs/id:%06lu,%s", out_dir,
                         unique_hangs, describe_op(0));
 
 #else
 
-      fn = alloc_printf("%s/hangs/id_%06llu", out_dir,
+      fn = alloc_printf("%s/hangs/id_%06lu", out_dir,
                         unique_hangs);
 
 #endif /* ^!SIMPLE_FILES */
@@ -3252,12 +3252,12 @@ static u8 save_if_interesting(char** argv, void* mem, u32 len, u8 fault) {
 
 #ifndef SIMPLE_FILES
 
-      fn = alloc_printf("%s/crashes/id:%06llu,sig:%02u,%s", out_dir,
+      fn = alloc_printf("%s/crashes/id:%06lu,sig:%02u,%s", out_dir,
                         unique_crashes, kill_signal, describe_op(0));
 
 #else
 
-      fn = alloc_printf("%s/crashes/id_%06llu_%02u", out_dir, unique_crashes,
+      fn = alloc_printf("%s/crashes/id_%06lu_%02u", out_dir, unique_crashes,
                         kill_signal);
 
 #endif /* ^!SIMPLE_FILES */
@@ -3394,11 +3394,11 @@ static void write_stats_file(double bitmap_cvg, double stability, double eps) {
     last_eps  = eps;
   }
 
-  fprintf(f, "start_time        : %llu\n"
-             "last_update       : %llu\n"
+  fprintf(f, "start_time        : %lu\n"
+             "last_update       : %lu\n"
              "fuzzer_pid        : %u\n"
-             "cycles_done       : %llu\n"
-             "execs_done        : %llu\n"
+             "cycles_done       : %lu\n"
+             "execs_done        : %lu\n"
              "execs_per_sec     : %0.02f\n"
              "paths_total       : %u\n"
              "paths_favored     : %u\n"
@@ -3411,12 +3411,12 @@ static void write_stats_file(double bitmap_cvg, double stability, double eps) {
              "variable_paths    : %u\n"
              "stability         : %0.02f%%\n"
              "bitmap_cvg        : %0.02f%%\n"
-             "unique_crashes    : %llu\n"
-             "unique_hangs      : %llu\n"
-             "last_path         : %llu\n"
-             "last_crash        : %llu\n"
-             "last_hang         : %llu\n"
-             "execs_since_crash : %llu\n"
+             "unique_crashes    : %lu\n"
+             "unique_hangs      : %lu\n"
+             "last_path         : %lu\n"
+             "last_crash        : %lu\n"
+             "last_hang         : %lu\n"
+             "execs_since_crash : %lu\n"
              "exec_timeout      : %u\n"
              "afl_banner        : %s\n"
              "afl_version       : " VERSION "\n"
@@ -3464,7 +3464,7 @@ static void maybe_update_plot_file(double bitmap_cvg, double eps) {
      execs_per_sec */
 
   fprintf(plot_file, 
-          "%llu, %llu, %u, %u, %u, %u, %0.02f%%, %llu, %llu, %u, %0.02f\n",
+          "%lu, %lu, %u, %u, %u, %u, %0.02f%%, %lu, %lu, %u, %0.02f\n",
           get_cur_time() / 1000, queue_cycle - 1, current_entry, queued_paths,
           pending_not_fuzzed, pending_favored, bitmap_cvg, unique_crashes,
           unique_hangs, max_depth, eps); /* ignore errors */
@@ -3636,8 +3636,8 @@ static void maybe_delete_out_dir(void) {
 
     u64 start_time, last_update;
 
-    if (fscanf(f, "start_time     : %llu\n"
-                  "last_update    : %llu\n", &start_time, &last_update) != 2)
+    if (fscanf(f, "start_time     : %lu\n"
+                  "last_update    : %lu\n", &start_time, &last_update) != 2)
       FATAL("Malformed data in '%s'", fn);
 
     fclose(f);
@@ -4967,7 +4967,7 @@ static u8 fuzz_one(char** argv) {
 #endif /* ^IGNORE_FINDS */
 
   if (not_on_tty) {
-    ACTF("Fuzzing test case #%u (%u total, %llu uniq crashes found)...",
+    ACTF("Fuzzing test case #%u (%u total, %lu uniq crashes found)...",
          current_entry, queued_paths, unique_crashes);
     fflush(stdout);
   }
@@ -7282,14 +7282,14 @@ static void check_cpu_governor(void) {
   f = fopen("/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq", "r");
 
   if (f) {
-    if (fscanf(f, "%llu", &min) != 1) min = 0;
+    if (fscanf(f, "%lu", &min) != 1) min = 0;
     fclose(f);
   }
 
   f = fopen("/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq", "r");
 
   if (f) {
-    if (fscanf(f, "%llu", &max) != 1) max = 0;
+    if (fscanf(f, "%lu", &max) != 1) max = 0;
     fclose(f);
   }
 
@@ -7297,7 +7297,7 @@ static void check_cpu_governor(void) {
 
   SAYF("\n" cLRD "[-] " cRST
        "Whoops, your system uses on-demand CPU frequency scaling, adjusted\n"
-       "    between %llu and %llu MHz. Unfortunately, the scaling algorithm in the\n"
+       "    between %lu and %lu MHz. Unfortunately, the scaling algorithm in the\n"
        "    kernel is imperfect and can miss the short-lived processes spawned by\n"
        "    afl-fuzz. To keep things moving, run these commands as root:\n\n"
 
@@ -7785,7 +7785,7 @@ int main(int argc, char** argv) {
 
           }
 
-          if (sscanf(optarg, "%llu%c", &mem_limit, &suffix) < 1 ||
+          if (sscanf(optarg, "%lu%c", &mem_limit, &suffix) < 1 ||
               optarg[0] == '-') FATAL("Bad syntax used for -m");
 
           switch (suffix) {
@@ -7991,7 +7991,7 @@ int main(int argc, char** argv) {
       show_stats();
 
       if (not_on_tty) {
-        ACTF("Entering queue cycle %llu.", queue_cycle);
+        ACTF("Entering queue cycle %lu.", queue_cycle);
         fflush(stdout);
       }
 

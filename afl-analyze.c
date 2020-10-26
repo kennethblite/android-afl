@@ -979,7 +979,7 @@ int main(int argc, char** argv) {
 
           }
 
-          if (sscanf(optarg, "%llu%c", &mem_limit, &suffix) < 1 ||
+          if (sscanf(optarg, "%lu%c", &mem_limit, &suffix) < 1 ||
               optarg[0] == '-') FATAL("Bad syntax used for -m");
 
           switch (suffix) {
@@ -1047,7 +1047,7 @@ int main(int argc, char** argv) {
 
   read_initial_file();
 
-  ACTF("Performing dry run (mem limit = %llu MB, timeout = %u ms%s)...",
+  ACTF("Performing dry run (mem limit = %lu MB, timeout = %u ms%s)...",
        mem_limit, exec_tmout, edges_only ? ", edges only" : "");
 
   run_target(use_argv, in_data, in_len, 1);

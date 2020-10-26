@@ -175,7 +175,7 @@ static u32 write_results(void) {
 
   if (!strncmp(out_file, "/dev/", 5)) {
 
-    fd = open(out_file, O_WRONLY, 0600);
+    fd = open(out_file, O_WRONLY|O_CREAT, 0600);
     if (fd < 0) PFATAL("Unable to open '%s'", out_file);
 
   } else if (!strcmp(out_file, "-")) {
@@ -648,7 +648,7 @@ int main(int argc, char** argv) {
 
           }
 
-          if (sscanf(optarg, "%llu%c", &mem_limit, &suffix) < 1 ||
+          if (sscanf(optarg, "%lu%c", &mem_limit, &suffix) < 1 ||
               optarg[0] == '-') FATAL("Bad syntax used for -m");
 
           switch (suffix) {
